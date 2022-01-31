@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22256%22 height=%22256%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%237d6ee7%22></rect><path fill=%22%23fff%22 d=%22M68.50 28.63L53.64 28.63L53.64 76.95Q53.20 77.14 52.25 77.36Q51.30 77.59 50.31 77.59L50.31 77.59Q46.36 77.59 46.36 74.26L46.36 74.26L46.36 28.63L29.52 28.63Q29.25 28.18 28.98 27.41Q28.71 26.65 28.71 25.66L28.71 25.66Q28.71 24.13 29.43 23.27Q30.16 22.42 31.50 22.42L31.50 22.42L70.47 22.42Q70.75 22.87 71.02 23.63Q71.28 24.40 71.28 25.30L71.28 25.30Q71.28 26.83 70.56 27.73Q69.84 28.63 68.50 28.63L68.50 28.63Z%22></path></svg>" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="./dist/reset.css">
+    <link rel="stylesheet" href="./dist/css/style.min.css">
+    <script defer src="./app.js"></script>
+    <title>Todo List</title>
+</head>
+
+<body>
+
+    <!-- To be implemented -->
+    <nav>
+       <div class="burger"> <i class="fas fa-bars"></i></div>
+    </nav>
+    <!--  -->
+
+    <main>
+        <section class="menu show">
+            
+            <ul class="menu-list">
+                <li class="menu-item menu-item-tasks">
+                    Tasks
+                </li>
+
+                <li class="menu-item menu-item-complated">
+                    Complated Tasks
+                </li>
+
+                <li class="menu-item ">
+                    <ul class="projects">
+                        <li>
+                            <!-- <div class="project" id="myProject" onclick="showProject(event)">My Project</div> -->
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="create-project">
+
+                <input type="text" id="createProject">
+                <div class="createProjectBtn">
+                    Create new project
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="tasks">
+            <div class="add-task">
+                <label for="add">Add a new task</label>
+                <input type="text" id="add">
+                <div class="addBtn">Add</div>
+                <div class="category-select">
+                    Select a project:
+                    <!-- <div class="myProject" onclick="getCategory(event)">My Project</div> -->
+                </div>
+
+
+            </div>
+
+            <div class="section-name">
+                Tasks
+            </div>
+
+            <div class="lists-container">
+                <div class="active-todo">
+                    <ul class="todo-list">
+                        <!-- <li class="todo" onclick="deleteTodo(event)">created in html</li> -->
+                    </ul>
+                </div>
+
+                <div class="complated">
+                    <ul class="complated-list">
+
+                    </ul>
+                    <div class="clear-history">
+                        Clear history
+                    </div>
+                </div>
+
+                <!-- <div class="myProject">
+                    <ul class="myProjectList">
+                    </ul>
+                </div> -->
+            </div>
+        </div>
+
+        </div>
+    </main>
+
+
+</body>
+
+</html>

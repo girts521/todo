@@ -17,6 +17,14 @@ const projectsMenu = document.querySelector('.projects')
 const burger = document.querySelector('.burger');
 const menu = document.querySelector('.menu');
 const container = document.querySelector('.container')
+const search = document.querySelector('.search-container input')
+const userContainer = document.querySelector('.user-coontainer')
+const addTaskHidden = document.querySelector('.add-task-hidden');
+const addTask = document.querySelector('.add-task');
+const cancelBtn = document.querySelector('.cancelBtn');
+const main = document.querySelector('main');
+const categoryBtn = document.querySelector('.categoryBtn');
+
 
 let categorySelected = ''
 let categories = []
@@ -49,30 +57,53 @@ const setDisplayNone = (className) => {
 }
 
 function deleteTodo(e) {
+    console.log('src', e.target.classList[0])
+    let element
 
-    const element = e.target
-    element.remove()
-    const deletedEl = todo.find(el => el.id === element.id)
-    deletedEl.deleted = true
-    const jsonList = JSON.stringify(todo)
-    localStorage.setItem('todo', jsonList)
-    const li = createDeletedTodoElement(element.innerText)
-    li.id = element.id
-    complatedList.appendChild(li)
+    if (menu.classList[1] != 'show') {
+        console.log('do nothing')
+    } else {
 
+        if (e.target.classList[0] != 'todo') {
+            element = e.target.parentNode
+        } else {
+            element = e.target
+        }
+
+        element.children[0].children[0].style = 'display: inline-block;'
+        setTimeout(() => {
+        element.remove()
+        }, 300)
+        
+        const deletedEl = todo.find(el => el.id === element.id)
+        deletedEl.deleted = true
+        const jsonList = JSON.stringify(todo)
+        localStorage.setItem('todo', jsonList)
+        const li = createDeletedTodoElement(element.innerText)
+        li.id = element.id
+        complatedList.appendChild(li)
+    }
 }
 
 const createTodoElement = (e) => {
     const li = document.createElement('li');
+    const logo = document.createElement('div');
     const span = document.createElement('span');
-    span.setAttribute('class', 'logo')
-    li.appendChild(span)
+    const div = document.createElement('div');
+    div.setAttribute('style', 'display: inline-block;')
+    logo.setAttribute('class', 'logo')
+    logo.appendChild(span)
+    // console.log(checkbox)
+    li.appendChild(logo)
+    li.appendChild(div)
     li.setAttribute('class', 'todo')
     li.setAttribute('onclick', 'deleteTodo(event)')
     li.setAttribute('id', id++)
-
-    li.innerText = e
-
+    li.draggable = true;
+    div.innerText = e
+    // console.log(li.children)
+    drag()
+    // li.innerHTML += e
     return li
 }
 
@@ -84,6 +115,7 @@ const createDeletedTodoElement = (e) => {
     li.setAttribute('class', 'complated-todo')
 
     li.innerText = e
+    
     return li
 }
 
@@ -128,6 +160,9 @@ document.onreadystatechange = () => {
 complatedBtn.addEventListener('click', () => {
 
     setDisplayNone('complated')
+    addTaskHidden.setAttribute('style', 'display: none;')
+    addTask.setAttribute('style', 'display: none;')
+    showHideMenu()
 
     const allTasks = todo.filter(e => e.deleted === true)
 
@@ -147,7 +182,8 @@ complatedBtn.addEventListener('click', () => {
 
 tasksBtn.addEventListener('click', () => {
     setDisplayNone('active-todo')
-
+    addTaskHidden.setAttribute('style', 'display: block;')
+    showHideMenu()
 
 
     const allTasks = todo.filter(e => e.deleted === false)
@@ -178,12 +214,21 @@ clearHistory.addEventListener('click', () => {
 })
 
 
-inputField.addEventListener('input', () => {
+categoryBtn.addEventListener('click', () => {
+   const style = categorySelect.getAttribute('style');
+//    console.log(style)
+
+   if(style === 'display: block'){
+    categorySelect.setAttribute('style', 'display: none')
+   }else{
     if (categories.length === 0) {
         categorySelect.setAttribute('style', 'display: none')
     } else {
         categorySelect.setAttribute('style', 'display: block')
     }
+   }
+
+
 
 })
 
@@ -210,26 +255,52 @@ addBtn.addEventListener('click', () => {
         todo.push(newTodo)
         const jsonList = JSON.stringify(todo)
         localStorage.setItem('todo', jsonList)
-        categorySelected = ''
+        // categorySelected = ''
         inputField.value = ''
     }
 
     categorySelect.setAttribute('style', 'display: none')
 })
 
+const dummyCategory  = () => {
+    categoryBtn.children[1].innerText = 'All Tasks'
+    categorySelected = ''
+    setTimeout(() => {
+        categorySelect.setAttribute('style', 'display: none;')
+    },300)
+}
+
 const getCategory = (e) => {
+    console.log(categoryBtn.children[1])
+    categoryBtn.children[1].innerText = e.target.innerText
+    
     categorySelected = e.target.className
+    setTimeout(() => {
+        categorySelect.setAttribute('style', 'display: none;')
+    },300)
+    
 }
 
 const showProject = (e) => {
-
-    const myProjectList = document.querySelector(`.${e.target.id} ul`)
-    setDisplayNone(e.target.id)
-
+    let myProjectList,id
+    if(e.target.id){
+        console.log('the id is:', e.target.id)
+        id = e.target.id
+         myProjectList = document.querySelector(`.${id} ul`)
+         console.log('project list:', myProjectList)
+    }else{
+        console.log('the id is:', e.target.parentNode.id)
+        id = e.target.parentNode.id
+         myProjectList = document.querySelector(`.${id} ul`)
+         console.log('project list:', myProjectList)
+    }
+    
+    setDisplayNone(id)
+    showHideMenu()
     if (localStorage.getItem('todo')) {
 
         todo = JSON.parse(localStorage.getItem('todo'))
-        const myProjectItems = todo.filter(el => el.category === e.target.id && el.deleted === false)
+        const myProjectItems = todo.filter(el => el.category === id && el.deleted === false)
         const children = Array.from(myProjectList.children)
         if (children.length > 0) {
             children.forEach((e) => {
@@ -251,7 +322,7 @@ createProjectBtn.addEventListener('click', () => {
     const test = regex.test(inputValue)
     console.log(test)
     console.log('input:', inputValue)
-    if(!test && inputValue != undefined || !test && inputValue != null) {
+    if (!test && inputValue != undefined || !test && inputValue != null) {
         console.log('test before pushing:', test)
         console.log('pushing category', inputValue)
         categories.push(inputValue)
@@ -266,23 +337,33 @@ const createProject = (input) => {
     //creating new menu-item btn
 
     const inputValue = createProjectInput.value || input
-    const regex = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/g;
-    
+    const regex = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~0-9]/g;
+
     const test = regex.test(inputValue)
     // const checkNum = parseInt(inputValue)
     console.log('outside: ', test)
-    console.log('outside: ',inputValue   )
+    console.log('outside: ', inputValue)
     // console.log('outside: ', checkNum)
-    if(!test && inputValue != undefined  || !test && inputValue != null) {
-        // console.log('inside: ',test)
-        // console.log('inside: ',inputValue   )
-        // console.log('inside: ', parseInt(inputValue))
+    if (!test && inputValue != undefined || !test && inputValue != null) {
+
         //create button in menu
         const menuDiv = document.createElement('div')
         const li = document.createElement('li')
         const deleteBtn = document.createElement('div');
+        const span = document.createElement('span');
+        const circle = document.createElement('div');
+        circle.setAttribute('class', 'circle');
+
+        const randomColor = Math.floor(Math.random()*16777215).toString(16);
+
+        circle.style.backgroundColor = `#${randomColor}`
+
+        menuDiv.appendChild(circle)
+
+        span.innerText = inputValue
+        menuDiv.appendChild(span)
         menuDiv.id = inputValue.split(' ').join('')
-        menuDiv.innerText = inputValue
+        
         menuDiv.setAttribute('class', 'project')
         menuDiv.setAttribute('onclick', 'showProject(event)')
         deleteBtn.setAttribute('class', 'delete-project-btn')
@@ -310,9 +391,9 @@ const createProject = (input) => {
 
         createProjectInput.value = ''
         return inputValue.split(' ').join('_')
-    }else{
+    } else {
         console.log('wrong input')
-        console.log('outside: ',inputValue)
+        console.log('outside: ', inputValue)
     }
 
 }
@@ -342,9 +423,107 @@ const deleteProject = (e) => {
 }
 
 burger.addEventListener('click', () => {
+    console.log('burger')
     menu.classList.toggle("show");
+})
+
+search.addEventListener('focus', () => {
+    if(window.outerWidth < 504){
+    userContainer.setAttribute('style', 'display: none;')
+    }
+})
+search.addEventListener('focusout', () => {
+    if(window.outerWidth < 504){
+    userContainer.removeAttribute('style')
+    }
+})
+
+const showHideMenu = (e) => {
+try{
+    if (e.target.classList[0] != 'menu' && e.target.parentNode.classList[0] != 'create-project' && e.target.innerText != 'Projects') {
+        if (menu.classList[1] != 'show') {
+            menu.classList.add('show')
+        } else {
+            console.log('not showing menu')
+        }
+    }
+}catch{
+    console.log('no classlist')
+}
+}
+
+
+addTaskHidden.addEventListener('click', () => {
+    if (menu.classList[1] != 'show') {
+        console.log('do nothing')
+    } else {
+        addTask.setAttribute('style', 'display: flex')
+        addTaskHidden.setAttribute('style', 'display: none')
+        categoryBtn.children[1].innerText = 'All Tasks'
+        categorySelected = ''
+    }
+})
+
+cancelBtn.addEventListener('click', () => {
+    addTask.setAttribute('style', 'display: none')
+    addTaskHidden.setAttribute('style', 'display: block')
 })
 
 
 //Implement dark mode
 //implement draggable li
+
+const getDragAfterElement = (y) => {
+    const draggableElements = [...todoList.querySelectorAll('.todo:not(.dragging)')]
+    
+    return draggableElements.reduce((closest,child) => {
+        const box = child.getBoundingClientRect()
+        const offset = y - box.top - box.height /2
+
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child }
+        } else {
+            return closest
+        }
+    }, {offset: Number.NEGATIVE_INFINITY}).element
+}
+
+const drag = () => {
+    let draggableLi
+
+    setTimeout(() => {
+        draggableLi = Array.from(todoList.children)
+
+        draggableLi.forEach(draggable => {
+
+            draggable.addEventListener('dragstart', () => {
+                draggable.classList.add('dragging')
+            })
+
+            draggable.addEventListener('dragend', () => {
+                draggable.classList.remove('dragging')
+                
+            })
+        })
+
+        todoList.addEventListener('dragover', (e) => {
+            e.preventDefault()
+
+            const draggable = document.querySelector('.dragging')
+
+            const afterElement = getDragAfterElement(e.clientY)
+
+            if(afterElement == null){
+                todoList.appendChild(draggable)
+            }else {
+                todoList.insertBefore(draggable, afterElement)
+            }            
+            
+        })
+
+    },300)
+}
+
+drag()
+
+
